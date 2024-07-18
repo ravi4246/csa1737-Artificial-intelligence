@@ -1,75 +1,34 @@
-import heapq
+l = [[8, 2, 5], [6, 9, 1], [4, 3, " "]]
+for i in range(3):
+    for j in range(3):
+        print(l[i][j], end=" ")
+    print()
 
-class Puzzle:
-    def __init__(self, board, goal, moves=0):
-        self.board = board
-        self.goal = goal
-        self.moves = moves
-        self.priority = self.moves + self.manhattan()
+r = 2
+c = 2
+n = 3
+while n > 0:
+    print("enter w/a/s/d or q to quit :")
+    d = input()
+    if d == 'q':
+        break
+    if d == 'w' and r > 0:  # Move up if not at the top boundary
+        l[r][c], l[r-1][c] = l[r-1][c], l[r][c]
+        r -= 1
+    elif d == 's' and r < 2:  # Move down if not at the bottom boundary
+        l[r][c], l[r+1][c] = l[r+1][c], l[r][c]
+        r += 1
+    elif d == 'a' and c > 0:  # Move left if not at the left boundary
+        l[r][c], l[r][c-1] = l[r][c-1], l[r][c]
+        c -= 1
+    elif d == 'd' and c < 2:  # Move right if not at the right boundary
+        l[r][c], l[r][c+1] = l[r][c+1], l[r][c]
+        c += 1
+    else:
+        print("Invalid move!")
+        continue
 
-    def manhattan(self):
-        distance = 0
-        for i in range(3):
-            for j in range(3):
-                if self.board[i][j] != 0:
-                    x, y = divmod(self.board[i][j] - 1, 3)
-                    distance += abs(x - i) + abs(y - j)
-        return distance
-
-    def is_goal(self):
-        return self.board == self.goal
-
-    def find_blank_space(self):
-        for i in range(3):
-            for j in range(3):
-                if self.board[i][j] == 0:
-                    return i, j
-
-    def generate_successors(self):
-        successors = []
-        x, y = self.find_blank_space()
-        directions = [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
-        
-        for dx, dy in directions:
-            if 0 <= dx < 3 and 0 <= dy < 3:
-                new_board = [row[:] for row in self.board]
-                new_board[x][y], new_board[dx][dy] = new_board[dx][dy], new_board[x][y]
-                successors.append(Puzzle(new_board, self.goal, self.moves + 1))
-        return successors
-
-    def __lt__(self, other):
-        return self.priority < other.priority
-
-def solve_puzzle(start, goal):
-    open_list = []
-    heapq.heappush(open_list, Puzzle(start, goal))
-    closed_set = set()
-    
-    while open_list:
-        current = heapq.heappop(open_list)
-        
-        if current.is_goal():
-            return current.moves
-        
-        closed_set.add(tuple(map(tuple, current.board)))
-        
-        for successor in current.generate_successors():
-            if tuple(map(tuple, successor.board)) not in closed_set:
-                heapq.heappush(open_list, successor)
-    return -1
-
-start = [
-    [1, 2, 3],
-    [4, 0, 5],
-    [6, 7, 8]
-]
-
-goal = [
-    [1, 2, 3],
-    [4, 5, 6],
-    [7, 8, 0]
-]
-
-if __name__ == "__main__":
-    moves = solve_puzzle(start, goal)
-    print(f"Number of moves required to solve the puzzle: {moves}")
+    for i in range(3):
+        for j in range(3):
+            print(l[i][j], end=" ")
+        print()
